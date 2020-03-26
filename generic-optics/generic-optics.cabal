@@ -50,6 +50,20 @@ library
   default-language:   Haskell2010
   ghc-options:        -Wall
 
+executable perf
+  hs-source-dirs:     perf
+  main-is:            Main.hs
+
+  build-depends:      base          >= 4.10 && <= 5.0
+                    , deepseq
+                    , generic-optics
+                    , optics-core
+                    , optics-th
+                    , criterion
+
+  default-language:   Haskell2010
+  ghc-options:        -Wall +RTS -s -RTS
+
 test-suite generic-optics-inspection-tests
   type:               exitcode-stdio-1.0
   hs-source-dirs:     test
