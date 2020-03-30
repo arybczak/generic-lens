@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedLabels #-}
@@ -12,10 +13,13 @@
 {-# OPTIONS_GHC -Wno-orphans -Wno-unused-imports #-}
 module Main where
 
+#define CRITERION 1
 #define CONSTRUCTORS 1
 
 #define xfield field'
 
+import Criterion.Main
+import Criterion.Types
 import Data.Generics.Product
 import Control.DeepSeq
 import GHC.Generics
@@ -43,9 +47,6 @@ import Optics.TH
 |4           |3181     |48.89  |
 
 -}
-
-main :: IO ()
-main = pure ()
 
 data X = X1
   { x00 :: Int
@@ -459,6 +460,137 @@ data X = X1
        }
 #endif
   deriving Generic
+
+#if CRITERION == 1
+
+data Z = Z1
+  { x00 :: Int
+  , x01 :: Int
+  , x02 :: Int
+  , x03 :: Int
+  , x04 :: Int
+  , x05 :: Int
+  , x06 :: Int
+  , x07 :: Int
+  , x08 :: Int
+  , x09 :: Int
+  , x10 :: Int
+  , x11 :: Int
+  , x12 :: Int
+  , x13 :: Int
+  , x14 :: Int
+  , x15 :: Int
+  , x16 :: Int
+  , x17 :: Int
+  , x18 :: Int
+  , x19 :: Int
+  }
+#if CONSTRUCTORS >= 2
+  | Z2 { x00 :: Int
+       , x01 :: Int
+       , x02 :: Int
+       , x03 :: Int
+       , x04 :: Int
+       , x05 :: Int
+       , x06 :: Int
+       , x07 :: Int
+       , x08 :: Int
+       , x09 :: Int
+       , x10 :: Int
+       , x11 :: Int
+       , x12 :: Int
+       , x13 :: Int
+       , x14 :: Int
+       , x15 :: Int
+       , x16 :: Int
+       , x17 :: Int
+       , x18 :: Int
+       , x19 :: Int
+       }
+#endif
+#if CONSTRUCTORS >= 3
+  | Z3 { x00 :: Int
+       , x01 :: Int
+       , x02 :: Int
+       , x03 :: Int
+       , x04 :: Int
+       , x05 :: Int
+       , x06 :: Int
+       , x07 :: Int
+       , x08 :: Int
+       , x09 :: Int
+       , x10 :: Int
+       , x11 :: Int
+       , x12 :: Int
+       , x13 :: Int
+       , x14 :: Int
+       , x15 :: Int
+       , x16 :: Int
+       , x17 :: Int
+       , x18 :: Int
+       , x19 :: Int
+       }
+#endif
+  deriving Generic
+
+instance NFData X
+instance NFData Z
+
+makeFieldLabelsWith noPrefixFieldLabels ''X
+makeFieldLabelsWith noPrefixFieldLabels ''Z
+
+x :: X
+x = X1 1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+{-# NOINLINE x #-}
+
+z :: Z
+z = Z1 1 1 1 1 1 1 1 1 1 1
+       1 1 1 1 1 1 1 1 1 1
+{-# NOINLINE z #-}
+
+main :: IO ()
+main = defaultMainWith config
+  [ bgroup "large"
+    [ bgroup "view"
+      [ bench "lens/th"       $ nf (view $ #x00) x
+      , bench "lens/generic"  $ nf (view $ xfield @"x00") x
+      ]
+    , bgroup "over"
+      [ bench "lens/th"       $ whnf (over #x00 (+100)) x
+      , bench "lens/generic"  $ whnf (over (xfield @"x00") (+100)) x
+      ]
+    , bench "deepseq"         $ nf id x
+    ]
+  , bgroup "small"
+    [ bgroup "view"
+      [ bench "lens/th"       $ nf (view $ #x00) z
+      , bench "lens/generic"  $ nf (view $ xfield @"x00") z
+      ]
+    , bgroup "over"
+      [ bench "lens/th"       $ whnf (over #x00 (+100)) z
+      , bench "lens/generic"  $ whnf (over (xfield @"x00") (+100)) z
+      ]
+    , bench "deepseq"         $ nf id z
+    ]
+  ]
+  where
+    config = defaultConfig { timeLimit = 2 }
+
+#else
+
+main :: IO ()
+main = pure ()
+
+#endif
 
 -- o
 x_00_v :: X -> Int
