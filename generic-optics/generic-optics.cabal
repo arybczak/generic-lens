@@ -57,12 +57,13 @@ executable perf
   build-depends:      base          >= 4.10 && <= 5.0
                     , deepseq
                     , generic-optics
+                    , generic-optics-lite
                     , optics-core
                     , optics-th
-                    , criterion
+--                    , criterion
 
   default-language:   Haskell2010
-  ghc-options:        -Wall +RTS -s -RTS
+  ghc-options:        -Wall +RTS -s -RTS -dsuppress-all -fprint-potential-instances
 
 test-suite generic-optics-inspection-tests
   type:               exitcode-stdio-1.0

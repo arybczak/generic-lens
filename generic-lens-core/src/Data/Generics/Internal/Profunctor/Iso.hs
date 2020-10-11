@@ -73,7 +73,7 @@ fromIso l = withIso l $ \ sa bt -> iso bt sa
 {-# INLINE fromIso #-}
 
 iso :: (s -> a) -> (b -> t) -> Iso s t a b
-iso = dimap
+iso f g = dimap f g
 {-# INLINE iso #-}
 
 withIso :: Iso s t a b -> ((s -> a) -> (b -> t) -> r) -> r
